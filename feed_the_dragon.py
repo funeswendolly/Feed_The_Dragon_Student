@@ -1,45 +1,39 @@
+from operator import truediv
+
 import pygame, random
 
 # Initialize pygame
 pygame.init()
 
 def make_text(font_object, text, color, background_color):
-    # TODO: Use the given font_object to create and return a rendered text Surface.
-    #       - Use font_object.render(...)
-    #       - Make sure antialias is set to True
-    #       - Use the given text, color, and background_color
-    pass # TODO: remove this when finished
-
+    return font_object.render(text, True, color,background_color)
 
 def blit(surface, item, rect):
     # TODO: Draw (blit) the given item (Surface) onto the given surface at the given rect.
     #       - Use the surface.blit(...) method
     pass # TODO: remove this when finished
-
+    surface.blit(item, rect)
 
 def fill(surface, color):
     # TODO: Fill the entire surface with the given color using surface.fill(...)
     pass # TODO: remove this when finished
-
+    surface.fill(color)
 
 def update_display():
     # TODO: Update the entire display so that any drawing shows up on the screen.
     #       - Use pygame.display.update()
     pass # TODO: remove this when finished
-
+    pygame.display.update()
 
 # Set display surface
-# TODO:
-#   - Create WINDOW_WIDTH and WINDOW_HEIGHT constants (e.g., 1000 x 400).
-#   - Use pygame.display.set_mode to create the display_surface with that size.
-#   - Set a window caption like "Feed the Dragon" using pygame.display.set_caption(...).
-
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 400
+pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Feed the Dragon")
 
 # Set FPS and clock
-# TODO:
-#   - Create an FPS constant (e.g., 60).
-#   - Create a clock object using pygame.time.Clock() for controlling the frame rate.
-
+FPS = 60
+clock = pygame.time.Clock()
 
 # Set game values
 # TODO:
@@ -53,7 +47,14 @@ def update_display():
 #       * score (starting at 0)
 #       * player_lives (start at PLAYER_STARTING_LIVES)
 #       * coin_velocity (start at COIN_STARTING_VELOCITY)
-
+PLAYER_STARTING_LIVES = 5
+PLAYER_VELOCITY = 10
+COIN_STARTING_VELOCITY = 10
+COIN_ACCELERATION = 0.5
+BUFFER_DISTANCE = 100
+score = 0
+player_lives = PLAYER_STARTING_LIVES
+coin_velocity = COIN_STARTING_VELOCITY
 
 # Set colors
 # TODO:
@@ -62,14 +63,17 @@ def update_display():
 #       * DARKGREEN:  RGB value of 10, 50, 10
 #       * WHITE
 #       * BLACK
-
+GREEN = (0, 255, 0)
+DARKGREEN = (10,50,10)
+WHITE = (255,255,255)
+BLACK = (0,0,0)
 
 # Set fonts
 # TODO:
 #   - Create a font object using pygame.font.Font(...)
 #   - Use the provided font file from the assets folder (e.g., "assets/AttackGraffiti.ttf")
 #   - Choose a font size (e.g., 32)
-
+font = pygame.font.Font("assets/AttackGraffiti.ttf",32 )
 
 # Set text
 # TODO:
@@ -82,17 +86,29 @@ def update_display():
 #       * score_rect at the top-left (e.g., (10, 10))
 #       * title_rect centered horizontally at the top
 #       * lives_rect at the top-right (e.g., (WINDOW_WIDTH - 10, 10))
+score_text = make_text(font, "Score: " + str(score), GREEN, DARKGREEN)
+title_text = make_text(font, "Feed the Dragon",GREEN,WHITE)
+lives_text = make_text(font, "Lives: " + str(player_lives), GREEN,DARKGREEN)
 
+score_rect = score_text.get_rect()
+title_rect = title_text.get_rect()
+lives_rect = lives_text.get_rect()
+
+score_rect.topleft = (10,10)
+title_rect.centerx = (WINDOW_WIDTH//2)
+title_rect.y = 10
+lives_rect.topright = (WINDOW_WIDTH -10,10)
 
 # Set sounds and music
 # TODO:
 #   - Load sound effects for:
-#       * catching a coin (e.g., "assets/coin_sound.wav")
 #       * missing a coin (e.g., "assets/miss_sound.wav")
 #   - Optionally adjust the miss sound volume using set_volume(...)
 #   - Load background music (e.g., "assets/ftd_background_music.wav") using pygame.mixer.music.load(...)
-
-
+catching_a_coin = pygame.mixer.Sound("assets/coin_sound.wav")
+missing_a_coin = pygame.mixer.Sound("assets/miss_sound.wav")
+missing_a_coin.set_volume(0.1)
+pygame.mixer.music.load("assets/ftd_background_music.wav")
 # Set images
 # TODO:
 #   - Load the player image (dragon) from "assets/dragon_right.png" using pygame.image.load(...)
@@ -103,20 +119,29 @@ def update_display():
 #   - Get its rect and:
 #       * start it off to the right of the window by BUFFER_DISTANCE
 #       * give it a random y-position somewhere between a top margin (like 64) and near the bottom
+player_image = pygame.image.load("assets/dragon_right.png")
+player_rect = player_image.get_rect()
+player_rect.left = 32
+player_rect.centery = WINDOW_HEIGHT//2
 
+coin_image = pygame.image.load("assets/coin.png")
+coin_rect = coin_image.get_rect()
+coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
+coin_rect.y = random.randint(65,WINDOW_HEIGHT)
 
 # The main game loop
 # TODO:
 #   - Play the background music in a loop using pygame.mixer.music.play(...)
 #   - Create a variable named running and set it to True; this will control the main while loop.
-
+pygame.mixer.music.play(-1,0,0)
+running = True
 
 def tick():
     # TODO:
     #   - Use the clock object to pause just enough so the game runs at FPS frames per second.
     #   - Call clock.tick(FPS)
     pass # TODO: remove this when finished
-
+clock.tick(FPS)
 
 def is_still_running():
     # TODO:
@@ -124,7 +149,10 @@ def is_still_running():
     #   - If you see an event of type pygame.QUIT, set running to False
     #     so the main loop will end and the game can quit.
     pass # TODO: remove this when finished
-
+    event =pygame.event.get()
+    for event in event:
+        if event.type == pygame.QUIT:
+            running = False
 
 def move_player():
     # TODO:
