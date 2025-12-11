@@ -163,13 +163,14 @@ def update_hud():
 def game_over_check():
     global player_lives
     if player_lives == 0:
+
+        game_over_text = make_text(font, "GAME OVER", GREEN, DARKGREEN)
+        game_over_rect = game_over_text.get_rect()
         blit(display_surface, game_over_text, game_over_rect)
 
-    continue_text = font.render("press any key to play again", True, GREEN, DARKGREEN)
-    continue_rect = continue_text.get_rect()
-
-    display_surface.blit(game_over_text, game_over_rect)
-    display_surface.blit(continue_text, continue_rect)
+        continue_text = font.render("press any key to play again", True, GREEN, DARKGREEN)
+        continue_rect = continue_text.get_rect()
+        display_surface.blit(continue_text, continue_rect)
     pygame.display.update()
 
     is_paused = True
@@ -178,7 +179,7 @@ def game_over_check():
          if event.type == pygame.KEYDOWN:
             score = 0
             player_lives = PLAYER_STARTING_LIVES
-            centered_vertically = player_position
+            player_position = player_rect.centery
             coin_velocity = COIN_STARTING_VELOCITY
             background_music = pygame.mixer.Sound("assets/coin_sound.wav")
             runing = False
