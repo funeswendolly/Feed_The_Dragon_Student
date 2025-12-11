@@ -1,34 +1,24 @@
-from operator import truediv
-
 import pygame, random
 
 # Initialize pygame
 pygame.init()
 
 def make_text(font_object, text, color, background_color):
-    return font_object.render(text, True, color,background_color)
+    return font.render(text, True, color,background_color)
 
 def blit(surface, item, rect):
-    # TODO: Draw (blit) the given item (Surface) onto the given surface at the given rect.
-    #       - Use the surface.blit(...) method
-    pass # TODO: remove this when finished
     surface.blit(item, rect)
 
 def fill(surface, color):
-    # TODO: Fill the entire surface with the given color using surface.fill(...)
-    pass # TODO: remove this when finished
     surface.fill(color)
 
 def update_display():
-    # TODO: Update the entire display so that any drawing shows up on the screen.
-    #       - Use pygame.display.update()
-    pass # TODO: remove this when finished
     pygame.display.update()
 
 # Set display surface
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 400
-pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Feed the Dragon")
 
 # Set FPS and clock
@@ -76,16 +66,6 @@ BLACK = (0,0,0)
 font = pygame.font.Font("assets/AttackGraffiti.ttf",32 )
 
 # Set text
-# TODO:
-#   - Use your make_text function (or font.render directly) to create:
-#       * score_text showing "Score: " + current score, with green color, dark green background color
-#       * title_text showing "Feed the Dragon", with green color, white background color
-#       * lives_text showing "Lives: " + current lives, with green color, and dark green background color
-#   - Get rects for each text surface using .get_rect()
-#   - Position:
-#       * score_rect at the top-left (e.g., (10, 10))
-#       * title_rect centered horizontally at the top
-#       * lives_rect at the top-right (e.g., (WINDOW_WIDTH - 10, 10))
 score_text = make_text(font, "Score: " + str(score), GREEN, DARKGREEN)
 title_text = make_text(font, "Feed the Dragon",GREEN,WHITE)
 lives_text = make_text(font, "Lives: " + str(player_lives), GREEN,DARKGREEN)
@@ -137,85 +117,72 @@ pygame.mixer.music.play(-1,0,0)
 running = True
 
 def tick():
-    # TODO:
-    #   - Use the clock object to pause just enough so the game runs at FPS frames per second.
-    #   - Call clock.tick(FPS)
-    pass # TODO: remove this when finished
-clock.tick(FPS)
+    clock.tick(FPS)
 
 def is_still_running():
-    # TODO:
-    #   - Get the pygame event list with pygame.event.get()
-    #   - If you see an event of type pygame.QUIT, set running to False
-    #     so the main loop will end and the game can quit.
-    pass # TODO: remove this when finished
-    event =pygame.event.get()
-    for event in event:
+    global running
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
 
 def move_player():
-    # TODO:
-    #   - Get the current state of the keyboard using pygame.key.get_pressed()
-    #   - If the up arrow is pressed and the player is not above a top limit (e.g., y > 64),
-    #       move the player up by PLAYER_VELOCITY.
-    #   - If the down arrow is pressed and the player is not below the bottom of the window,
-    #       move the player down by PLAYER_VELOCITY.
-    pass # TODO: remove this when finished
+    keys = pygame.key.get_pressed()
+    for key in keys:
+        if key == pygame.K_UP and player_rect.y > 64:
+             player_rect.y -= PLAYER_VELOCITY
+        if key == pygame.K_DOWN and player_rect.y < WINDOW_HEIGHT - 32:
+             player_rect.x += PLAYER_VELOCITY
 
 
 def handle_coin():
-    # TODO:
-    #   - Move the coin to the left each frame by subtracting coin_velocity from coin_rect.x.
-    #   - If the coin passes off the left side of the screen (coin_rect.x < 0):
-    #       * Subtract 1 from player_lives.
-    #       * Play the miss sound.
-    #       * Reset the coin's position:
-    #           - x: WINDOW_WIDTH + BUFFER_DISTANCE
-    #           - y: a random integer between a top margin (e.g., 64) and near the bottom edge.
-    pass # TODO: remove this when finished
-
+    # * Subtract 1 from player_lives.
+    global player_lives
+    if coin_rect.x < 0:
+        player_lives -= 1
+        missing_a_coin.play()
+        coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
+        coin_rect.y = random.randint(64,WINDOW_HEIGHT)
+    else:
+        coin_rect.x -= coin_velocity
 
 def handle_collisions():
-    # TODO:
-    #   - Check if the player_rect and coin_rect are colliding using colliderect(...)
-    #   - If they collide:
-    #       * Increase score by 1
-    #       * Play the coin sound
-    #       * Increase coin_velocity by COIN_ACCELERATION
-    #       * Reset the coin's position:
-    #           - x: WINDOW_WIDTH + BUFFER_DISTANCE
-    #           - y: random integer between the same top and bottom margins
-    pass # TODO: remove this when finished
-
+    global score, coin_velocity
+    if player_rect.colliderect(coin_rect):
+        score += 1
+        catching_a_coin.play()
+        coin_velocity += COIN_ACCELERATION
+        coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
+        coin_rect.y = random.randint(64,WINDOW_HEIGHT)
 
 def update_hud():
-    # TODO:
-    #   - Re-create score_text and lives_text each frame using make_text(...),
-    #     so they show the updated score and lives values.
-    #   - Remember to use the same font and colors (GREEN and DARKGREEN).
-    pass # TODO: remove this when finished
-
+    global score_text
+    score_text = make_text(font, "Score: " + str(score), GREEN, DARKGREEN)
+    make_text(lives_text, "Lives: " + str(player_lives), GREEN, DARKGREEN)
 
 def game_over_check():
-    # TODO:
-    #   - If player_lives reaches 0:
-    #       * Draw the game over text and the "press any key to play again" text on the screen.
-    #       * Update the display so the player can see the game over screen.
-    #       * Stop the background music.
-    #       * Create a loop (e.g., is_paused = True) that:
-    #           - Waits for events:
-    #               + If the player presses any key (KEYDOWN):
-    #                   · Reset score to 0
-    #                   · Reset player_lives to PLAYER_STARTING_LIVES
-    #                   · Reset player position to center vertically
-    #                   · Reset coin_velocity to COIN_STARTING_VELOCITY
-    #                   · Restart the background music
-    #                   · Exit the pause loop (resume game)
-    #               + If the player clicks the window close button (QUIT):
-    #                   · Set running to False and exit the pause loop so the game can end.
-    pass # TODO: remove this when finished
+    global player_lives
+    if player_lives == 0:
+        blit(display_surface, game_over_text, game_over_rect)
 
+    continue_text = font.render("press any key to play again", True, GREEN, DARKGREEN)
+    continue_rect = continue_text.get_rect()
+
+    display_surface.blit(game_over_text, game_over_rect)
+    display_surface.blit(continue_text, continue_rect)
+    pygame.display.update()
+
+    is_paused = True
+    while is_paused:
+        for event in pygame.event.get():
+         if event.type == pygame.KEYDOWN:
+            score = 0
+            player_lives = PLAYER_STARTING_LIVES
+            centered_vertically = player_position
+            coin_velocity = COIN_STARTING_VELOCITY
+            background_music = pygame.mixer.Sound("assets/coin_sound.wav")
+            runing = False
+            is_paused = False
 
 def update_screen():
     # TODO:
@@ -227,6 +194,14 @@ def update_screen():
     #   - Finally, call update_display() so that everything appears on the screen.
     pass
 
+    display_surface.fill(BLACK)
+    score_text.blit(title_rect)
+    title_text.blit(title_rect)
+    lives_text.blit(lives_rect)
+
+    player_image.blit(player_rect)
+    coin_image.blit(coin_rect)
+    update_display()
 
 while running:
     # Main game loop steps:
