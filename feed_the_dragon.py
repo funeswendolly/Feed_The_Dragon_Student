@@ -161,16 +161,11 @@ def update_hud():
     make_text(lives_text, "Lives: " + str(player_lives), GREEN, DARKGREEN)
 
 def game_over_check():
-    global player_lives
+    global player_lives, coin_velocity, running, game_over_text, continue_text, game_over_rect, continue_rect
     if player_lives == 0:
-
-        game_over_text = make_text(font, "GAME OVER", GREEN, DARKGREEN)
-        game_over_rect = game_over_text.get_rect()
         blit(display_surface, game_over_text, game_over_rect)
+        blit(display_surface, continue_text, continue_rect)
 
-        continue_text = font.render("press any key to play again", True, GREEN, DARKGREEN)
-        continue_rect = continue_text.get_rect()
-        display_surface.blit(continue_text, continue_rect)
     pygame.display.update()
 
     is_paused = True
@@ -195,13 +190,13 @@ def update_screen():
     #   - Finally, call update_display() so that everything appears on the screen.
     pass
 
-    display_surface.fill(BLACK)
-    score_text.blit(title_rect)
-    title_text.blit(title_rect)
-    lives_text.blit(lives_rect)
+    fill(display_surface, BLACK)
+    blit(display_surface, score_text, score_rect)
+    blit(display_surface, title_text, title_rect)
+    blit(display_surface,lives_text, lives_rect)
 
-    player_image.blit(player_rect)
-    coin_image.blit(coin_rect)
+    blit(display_surface, player_image,player_rect)
+    blit(display_surface, coin_image,coin_rect)
     update_display()
 
 while running:
